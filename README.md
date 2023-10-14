@@ -6,13 +6,13 @@
 2. Try downloading the pre-stored "sample.jpg" file as an example
 3. Try uploading & downloading some files.
 
-# Run applicaton without container: 
+# Run applicaton locally without container: 
 ```
 $ npm install express
 $ npm install formidable
 $ npm start
 ```
-# Run application using Docker container:
+# Run application locally using Docker container:
 Pull the alpine linux with node docker image
 ```
 $ docker pull node:20-alpine3.17
