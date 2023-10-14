@@ -52,3 +52,4 @@ Push the application docker image to the Azure server
 ```
 $ docker push spccloud.azurecr.io/cloud-node:20-alpine3.17
 ```
+After that, the image should have been successfully updated. You need to either request the access to Azure container instance management or ask me to restart the container instance.
