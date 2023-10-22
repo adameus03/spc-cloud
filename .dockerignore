@@ -4,3 +4,4 @@ tools
 manuals
 .git
 .gitignore
+src/node_modules
