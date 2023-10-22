@@ -7,7 +7,7 @@ apk update && apk upgrade
 #watch whoami
 
 if [ ! $? -eq 0 ]; then
-    echo "$SCRIPT_NICKNAME: ERROR - Failed to update/upgrade the packages. Proceeding with the current version."
+    echo "$SCRIPT_NICKNAME: WARNING - Failed to update/upgrade the packages. Proceeding with the current version."
 fi
 echo "$SCRIPT_NICKNAME: Setting environment variables..."
 chmod u+rx ./config.sh
