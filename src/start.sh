@@ -11,7 +11,7 @@ if [ ! $? -eq 0 ]; then
 fi
 echo "$SCRIPT_NICKNAME: Setting environment variables..."
 chmod u+rx ./config.sh
-source ./config.sh
+. ./config.sh
 if [ $? -eq 0 ]; then
     /bin/sh $VOLUME_GUARD_PATH
     if [ $? -eq 0 ]; then
