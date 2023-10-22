@@ -7,13 +7,15 @@
 2. Try downloading the pre-stored "sample.jpg" file as an example
 3. Try uploading & downloading some files.
 
-# Run applicaton locally without container: 
+# Run applicaton locally without container:
+If you would like to run the server without using Docker container, please follow the below steps:
 1. Install sqlite3
 2. Copy the spc-cloud/.env file into the spc-cloud/src/bin directory
 3. Run ```spc-cloud/src $ npm install```
 4. Run ```spc-cloud/src $ /bin/sh ./start.sh```
    
-The application server should now be running directly in the host OS, using the port specified in the .env file (80 by default)
+The application server should now be running directly in the host OS, using the port specified in the .env file (80 by default)\
+If you encounter problems, please create an issue for this repository. 
 # Run application locally using Docker Compose:
 Always make sure using the correct Docker context, by executing:
 ```
