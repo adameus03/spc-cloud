@@ -3,6 +3,9 @@
 ## 22.10.2023 manual
 
 # Live demo of the hosted container instance
+```diff
+- CURRENTLY DOWN TO REDUCE COSTS ¯\_(ツ)_/¯
+```
 1. Visit http://spc-filetransfer.eastus.azurecontainer.io
 2. Try downloading the pre-stored "sample.jpg" file as an example
 3. Try uploading & downloading some files.
