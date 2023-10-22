@@ -10,6 +10,10 @@
 # Run applicaton locally without container: 
 ?
 # Run application locally using Docker Compose:
+Always make sure using the correct Docker context, by executing:
+```
+spc-cloud $ docker context use default
+```
 Build the Docker image:
 ```
 spc-cloud $ docker compose up --build -d 
