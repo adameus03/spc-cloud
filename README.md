@@ -1,10 +1,13 @@
 # spc-cloud
-## 14.10.2023 manual
 
-# Live demo of the hosted container instance ( CURRENTLY DISABLED TO REDUCE COSTS )
-1. Visit http://20.56.243.165:8000/
+## 22.10.2023 manual
+
+# Live demo of the hosted container instance
+1. Visit http://spc-filetransfer.eastus.azurecontainer.io/transfer-gui.html
 2. Try downloading the pre-stored "sample.jpg" file as an example
 3. Try uploading & downloading some files.
+
+## 14.10.2023 manual
 
 # Run applicaton locally without container: 
 ```
