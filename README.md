@@ -83,5 +83,7 @@ or
 ```
 WARNING: This will change the state of the contaner, and affect the operating costs measured by Azure.
 
+# Change the network port used to access the application
+To change the port used to access the application you need to modify the **.env** file.
 # What needs to be done?
 Check the issue titled "TODO"
