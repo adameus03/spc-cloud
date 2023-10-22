@@ -11,6 +11,6 @@ RUN apk add sqlite
 # RUN mkdir -p /testif/this/is/added
 COPY src/ .
 COPY .env ./bin/
-EXPOSE 80
+EXPOSE $expose_port
 # CMD [ "./start.sh" ]
 CMD ["/bin/sh", "./start.sh"]
