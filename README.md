@@ -10,9 +10,17 @@
 # Run applicaton locally without container:
 If you would like to run the server without using Docker container, please follow the below steps:
 1. Install sqlite3
-2. Copy the spc-cloud/.env file into the spc-cloud/src/bin directory
-3. Run ```spc-cloud/src $ npm install```
-4. Run ```spc-cloud/src $ /bin/sh ./start.sh```
+```
+$ sudo apt-get install sqlite3
+```
+3. Copy the spc-cloud/.env file into the spc-cloud/src/bin directory, as well as spc-cloud/package.json and spc-cloud/package-lock.js into spc-cloud/src/
+```
+spc-cloud $ cp .env src/bin/
+spc-cloud $ cp package.json src/
+spc-cloud $ cp package-lock.json src/
+```
+5. Run ```spc-cloud/src $ npm install```
+6. Run ```spc-cloud/src $ /bin/sh ./start.sh```
    
 The application server should now be running directly in the host OS, using the port specified in the .env file (80 by default)\
 If you encounter problems, please create an issue for this repository. 
