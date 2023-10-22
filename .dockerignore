@@ -1,4 +1,6 @@
-node_modules
+src/node_modules
 npm-debug.log
 tools
 manuals
+.git
+.gitignore

@@ -1,16 +1,16 @@
+ARG expose_port=80
 FROM node:20-alpine3.17
-
-WORKDIR /home/mundus/base/nodejs/spc-cloud
-
-COPY package*.json ./
+RUN mkdir -p /opt/app
+WORKDIR /opt/app
+# RUN mkdir -p /testif2/this/is/added
+COPY src/package.json src/package-lock.json ./
 
 RUN npm install
-# RUN npm ci --omit=dev
-
-COPY . .
-
-RUN mkdir ./usrFiles
-
-EXPOSE 8000
-
-CMD [ "npm", "start" ]
+# RUN apk add sqlite && mkdir -p /pers/sqlite/databases
+RUN apk add sqlite
+# RUN mkdir -p /testif/this/is/added
+COPY src/ .
+COPY .env ./bin/
+EXPOSE 80
+# CMD [ "./start.sh" ]
+CMD ["/bin/sh", "./start.sh"]

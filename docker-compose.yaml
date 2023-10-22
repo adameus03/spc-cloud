@@ -1,0 +1,31 @@
+version: '3'
+services:
+  spcserver:
+    build: 
+      context: .
+      args:
+        expose_port: ${SPCSERVER_IN_PORT}
+
+    image: spccloud.azurecr.io/spc-cloud
+    domainname: spc-filetransfer
+    #environment:
+    #  DB_SCHEMA: postgres
+    #  DB_USER: postgres
+    #  DB_PASSWORD: postgres
+    #  DB_HOST: postgres
+    #depends_on:
+      #- postgres
+      #- alpine
+    ports:
+      - "${SPCSERVER_OUT_PORT}:${SPCSERVER_IN_PORT}"
+      #- 3000:3000
+    volumes: 
+      - spc-db:/pers
+        
+volumes:
+  spc-db:
+    driver: azure_file
+    driver_opts:
+      share_name: dnpacishare
+      storage_account_name: spcvolumesstorage1
+
