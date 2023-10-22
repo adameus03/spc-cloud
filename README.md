@@ -47,7 +47,7 @@ After running ```docker compose up --build -d``` for the first time, uncomment t
 If the image is already built, starting or stopping the container is as easy as running ```docker compose up``` or ```docker compose down```.
 
 
-# Update the image in the Azure Container Registry (Use to update the application hosted at Azure)
+# Update the image in the Azure Container Registry (use to update the application hosted at Azure)
 To update the production container image, first you need to install the Azure CLI.
 Then you can login into the ACR/container group:
 ```
