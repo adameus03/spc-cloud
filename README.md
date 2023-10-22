@@ -45,9 +45,9 @@ Now you can push the current container image build into the ACR:
 ```
 spc-cloud $ docker-compose push
 ```
-After successful push, the image should have been successfully updated. \ 
-If you wish you can now proceed to starting the Azure Container Instance (ACI). \
-# Run & stop the live remote container 
+After successful push, the image should have been successfully updated.\
+If you wish you can now proceed to starting the Azure Container Instance (ACI).
+# Run and stop the live remote container 
 In order to do that you first need to switch the Docker context from "default" to a context associated with Azure. \
 Check available Docker contexts by running:
 ```$ docker context ls```
