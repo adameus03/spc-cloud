@@ -85,5 +85,8 @@ WARNING: This will change the state of the contaner, and affect the operating co
 
 # Change the network port used to access the application
 To change the port used to access the application you need to modify the **.env** file.
+# Where do I learn more about the project technologies?
+To learn more about the project, you can visit the repository community wiki: https://github.com/adameus03/spc-cloud/wiki 
+If you feel like sharing the knowledge about the project technologies or have useful resources to include, feel free to contribute to the repository wiki.  
 # What needs to be done?
 Check the issue titled "TODO"
