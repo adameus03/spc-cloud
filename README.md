@@ -7,37 +7,27 @@
 2. Try downloading the pre-stored "sample.jpg" file as an example
 3. Try uploading & downloading some files.
 
-## 14.10.2023 manual
-
 # Run applicaton locally without container: 
+?
+# Run application locally using Docker Compose:
+Build the Docker image:
 ```
-$ npm install express
-$ npm install formidable
-$ npm start
+spc-cloud $ docker compose up --build -d 
 ```
-# Run application locally using Docker container:
-Pull the alpine linux with node docker image
+Note: If you are building the image for the first time, you need to comment-out (using the '#' symbol) the last 4 lines of the docker-compose.yaml file, like this:
 ```
-$ docker pull node:20-alpine3.17
+...
+volumes:
+  spc-db:
+    #driver: azure_file
+    #driver_opts:
+    #  share_name: dnpacishare
+    #  storage_account_name: spcvolumesstorage1
 ```
-Create docker image for the application
-```
-$ docker build -t spc/cloud-node:20-alpine3.17 .
-```
-Application create & start container instance
-```
-$ docker run -d -p 8000:8000 --name spcapp spc/cloud-node:20-alpine3.17
-```
-Stop the container instance
-```
-$ docker stop spcapp
-```
-Start the container instance after it has been stopped
-```
-$ docker start spcapp
-```
+After running ```docker compose up --build -d``` for the first time, uncomment those 4 lines back, and leave them as they are.
 
 # Update the image in the Azure Container Registry 
+SECTION IS OBSOLETE
 For updating production:
 ```
 docker login spccloud.azurecr.io --username spccloud
