@@ -35,7 +35,6 @@ If the image is already built, starting or stopping the container is as easy as 
 
 
 # Update the image in the Azure Container Registry 
-SECTION IS OBSOLETE
 To update the production container image, first you need to install the Azure CLI.
 Then you can login into the ACR/container group:
 ```
@@ -46,7 +45,8 @@ Now you can push the current container image build into the ACR:
 ```
 spc-cloud $ docker-compose push
 ```
-After successful push, you can can proceed to starting the Azure Container Instance (ACI). \
+After successful push, the image should have been successfully updated. \ 
+If you wish you can now proceed to starting the Azure Container Instance (ACI). \
 In order to do that you first need to switch the Docker context from "default" to a context associated with Azure. \
 Check available Docker contexts by running:
 ```$ docker context ls```
@@ -65,25 +65,6 @@ or
   $ docker compose down
 ```
 WARNING: This will change the state of the contaner, and affect the operating costs measured by Azure.
-
-
-```
-docker login spccloud.azurecr.io --username spccloud
-```
-The password is of course not provided here for security reasons. 
-If you already created the spccloud.azurecr.io/cloud-node:20-alpine3.17 image, before proceeding, please run
-```
-$ docker image rm spccloud.azurecr.io/cloud-node:20-alpine3.17
-```
-Create the docker image for Azure:
-```
-$ docker build -t spccloud.azurecr.io/cloud-node:20-alpine3.17 .
-```
-Push the application docker image to the Azure server
-```
-$ docker push spccloud.azurecr.io/cloud-node:20-alpine3.17
-```
-After that, the image should have been successfully updated. You need to either request the access to Azure container instance management or ask me to restart the container instance.
 
 # What needs to be done?
 Check the issue titled "TODO"
