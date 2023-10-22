@@ -14,7 +14,8 @@ Build the Docker image:
 ```
 spc-cloud $ docker compose up --build -d 
 ```
-Note: If you are building the image for the first time, you need to comment-out (using the '#' symbol) the last 4 lines of the docker-compose.yaml file, like this:
+Note 1: This will run the container as soon as the image is built.
+Note 2: If you are building the image for the first time, you need to comment-out (using the '#' symbol) the last 4 lines of the docker-compose.yaml file, like this:
 ```
 ...
 volumes:
@@ -25,6 +26,8 @@ volumes:
     #  storage_account_name: spcvolumesstorage1
 ```
 After running ```docker compose up --build -d``` for the first time, uncomment those 4 lines back, and leave them as they are.
+
+If the image is already built, starting or stopping the container is as easy as running ```docker compose up``` or ```docker compose down```
 
 # Update the image in the Azure Container Registry 
 SECTION IS OBSOLETE
