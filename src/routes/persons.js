@@ -1,4 +1,4 @@
-var express = require('express');
+/*var express = require('express');
 var router = express.Router();
 var db = require('../database');
 
@@ -50,4 +50,4 @@ router.delete("/:id", function(req, res) {
         });
 });
 
-module.exports = router;
+module.exports = router;*/
