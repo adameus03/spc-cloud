@@ -4,7 +4,7 @@
 
 # Live demo of the hosted container instance
 ```diff
-+ CURRENTLY UP TO REDUCE COSTS ¯\_(ツ)_/¯
++ CURRENTLY UP  ツ
 ```
 1. Visit http://spc-filetransfer.eastus.azurecontainer.io
 2. Try downloading the pre-stored "sample.jpg" file as an example
