@@ -68,11 +68,29 @@ router.post("/login", async (req, res, next) => {
 	res.end();
 })
 
-router.get("/", async (req, res, next) => {
-	res.type = "application/json";
-	res.write(JSON.stringify(await db.Person.findAll()));
-	res.statusCode = 200;
+/**
+ * 
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @param {express.NextFunction} next 
+ */
+async function checkLogin(req, res, next) {
+	if (req.cookies["login_id"]) {
+		const id = req.cookies["login_id"];
+		const login = db.LoginInstance.findByPk(id);
+		if (!login) {
+			res.redirect("/users/login");
+			res.end();
+		} else {
+			next();
+		}
+		return
+	}
+	res.redirect("/users/login");
 	res.end();
-})
+}
 
-module.exports = router;
+module.exports = {
+	router: router,
+	checkLogin: checkLogin
+};
