@@ -40,18 +40,23 @@ router.post("/login", async (req, res, next) => {
 	if (fields["username"] && fields["username"][0] && fields["password"] && fields["password"][0]) {
 		const user = await db.Person.findByPk(fields["username"][0]);
 		if (user) {
-			let generatedId;
-			do {
-				generatedId = utils.makeid(32);
-			} while (await db.LoginInstance.findByPk(generatedId));
-			await db.LoginInstance.create({
-				login_id: generatedId,
-				user: user.username,
-			});
-			res.cookie("login_id", generatedId, {
-				maxAge: 86400000 // one day
-			});
-			res.redirect("/");
+			if (user.password == fields["password"][0]) {
+				let generatedId;
+				do {
+					generatedId = utils.makeid(32);
+				} while (await db.LoginInstance.findByPk(generatedId));
+				await db.LoginInstance.create({
+					login_id: generatedId,
+					user: user.username,
+				});
+				res.cookie("login_id", generatedId, {
+					maxAge: 86400000 // one day
+				});
+				res.redirect("/");
+			} else {
+				res.redirect("/users/login");
+				console.log(`Incorrect user password for {user.username}`);
+			}
 		} else {
 			res.redirect("/users/register");
 			console.log("Trying to create existing user");
