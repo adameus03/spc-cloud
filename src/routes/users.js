@@ -87,7 +87,7 @@ router.post("/login", async (req, res, next) => {
 async function checkLogin(req, res, next) {
 	if (req.cookies["login_id"]) {
 		const id = req.cookies["login_id"];
-		const login = db.LoginInstance.findByPk(id);
+		const login = await db.LoginInstance.findByPk(id);
 		if (!login) {
 			res.redirect("/users/login");
 			res.end();
