@@ -34,6 +34,16 @@ router.get("/login", (req, res, next) => {
 	res.render("login.html", { title: "Registration" });
 })
 
+router.get("/logout", async (req, res, next) => {
+	const instance = await db.LoginInstance.findByPk(req.cookies["login_id"]);
+	if (instance) {
+		await instance.destroy();
+	}
+	res.clearCookie("login_id");
+	res.redirect("/users/login");
+	res.end();
+})
+
 router.post("/login", async (req, res, next) => {
 	const form = new formidable.IncomingForm();
 	const [fields, files] = await form.parse(req);
