@@ -27,18 +27,41 @@ const sequelize = new Sequelize({
     //storage: 'testStorageFile'
   });
 //const sequelize = new Sequelize('sqlite::memory:');
-/*const Person = sequelize.define('Person', {
-    firstName: {
+const Person = sequelize.define('Person', {
+    username: {
+        type: Sequelize.STRING,
+        allowNull: false,
+		primaryKey: true,
+		unique: true
+    },
+    password: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    lastName: {
-        type: Sequelize.STRING,
-        allowNull: true
-    },
-});*/
+});
+
+const LoginInstance = sequelize.define("LoginInstance", {
+	login_id: {
+		type: Sequelize.STRING,
+		allowNull: false,
+		unique: true,
+		primaryKey: true,
+	},
+	user: {
+		type: Sequelize.STRING,
+		allowNull: false,
+		references: {
+			model: Person,
+			key: "username",
+		},
+		onUpdate: "CASCADE",
+		onDelete: "CASCADE",
+	}
+})
+
 module.exports = {
     sequelize: sequelize,
-    //Person: Person,
+    Person: Person,
+	LoginInstance: LoginInstance
     //name: name //hide/delete?
 };
