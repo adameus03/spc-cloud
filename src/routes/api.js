@@ -44,4 +44,6 @@ router.get('/download', (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = {
+	router: router
+};
