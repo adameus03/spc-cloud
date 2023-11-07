@@ -26,11 +26,29 @@ router.post("/register", async (req, res, next) => {
 	res.end();
 })
 
-router.get("/register", (req, res, next) => {
+router.get("/register", async (req, res, next) => {
+	if (req.cookies["login_id"]) {
+		const id = req.cookies["login_id"];
+		const login = await db.LoginInstance.findByPk(id);
+		if (login) {
+			res.redirect("/");
+			res.end();
+			return;
+		}
+	}
 	res.render("register.html", { title: "Registration" });
 })
 
-router.get("/login", (req, res, next) => {
+router.get("/login", async (req, res, next) => {
+	if (req.cookies["login_id"]) {
+		const id = req.cookies["login_id"];
+		const login = await db.LoginInstance.findByPk(id);
+		if (login) {
+			res.redirect("/");
+			res.end();
+			return;
+		}
+	}
 	res.render("login.html", { title: "Registration" });
 })
 
