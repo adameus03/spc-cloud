@@ -27,29 +27,23 @@ router.post("/register", async (req, res, next) => {
 })
 
 router.get("/register", async (req, res, next) => {
-	if (req.cookies["login_id"]) {
-		const id = req.cookies["login_id"];
-		const login = await db.LoginInstance.findByPk(id);
-		if (login) {
-			res.redirect("/");
-			res.end();
-			return;
-		}
+	if ((await checkLogin(req)).logged) {
+		res.redirect("/");
+		res.end();
 	}
-	res.render("register.html", { title: "Registration" });
+	else {
+		res.render("register.html", { title: "Registration" });
+	}
 })
 
 router.get("/login", async (req, res, next) => {
-	if (req.cookies["login_id"]) {
-		const id = req.cookies["login_id"];
-		const login = await db.LoginInstance.findByPk(id);
-		if (login) {
-			res.redirect("/");
-			res.end();
-			return;
-		}
+	if ((await checkLogin(req)).logged) {
+		res.redirect("/");
+		res.end();
 	}
-	res.render("login.html", { title: "Registration" });
+	else {
+		res.render("login.html", { title: "Registration" });
+	}
 })
 
 router.get("/logout", async (req, res, next) => {
@@ -73,6 +67,11 @@ router.post("/login", async (req, res, next) => {
 				do {
 					generatedId = utils.makeid(32);
 				} while (await db.LoginInstance.findByPk(generatedId));
+				await db.LoginInstance.destroy({
+					where: {
+					  user: user.username
+					}
+				  });
 				await db.LoginInstance.create({
 					login_id: generatedId,
 					user: user.username,
@@ -96,29 +95,46 @@ router.post("/login", async (req, res, next) => {
 	res.end();
 })
 
+
+
+/**
+ *  @param {express.Request} req 
+ */
+async function checkLogin(req) {
+	return new Promise(async (resolve,reject) => {
+		if (req.cookies["login_id"]) {
+			const id = req.cookies["login_id"];
+			const login = await db.LoginInstance.findByPk(id);
+			if (login) {
+				resolve({ logged: true });
+			}
+			else {
+				resolve({ logged: false });
+			}
+		}
+		else {
+			resolve({ logged: false });
+		}
+	});
+}
+
 /**
  * 
  * @param {express.Request} req 
  * @param {express.Response} res 
  * @param {express.NextFunction} next 
  */
-async function checkLogin(req, res, next) {
-	if (req.cookies["login_id"]) {
-		const id = req.cookies["login_id"];
-		const login = await db.LoginInstance.findByPk(id);
-		if (!login) {
-			res.redirect("/users/login");
-			res.end();
-		} else {
-			next();
-		}
-		return
+async function loginGuard(req, res, next) {
+	if((await checkLogin(req)).logged) {
+		next();
 	}
-	res.redirect("/users/login");
-	res.end();
+	else {
+		res.redirect("/users/login");
+		res.end();
+	}
 }
 
 module.exports = {
 	router: router,
-	checkLogin: checkLogin
+	loginGuard: loginGuard
 };

@@ -34,7 +34,7 @@ app.set("views", "./public");
 app.set('view engine', 'ejs');
 
 app.use("/users", users.router);
-app.use(users.checkLogin);
+app.use(users.loginGuard);
 
 app.use('/', indexRouter);
 //app.use('/api', apiRouter);
