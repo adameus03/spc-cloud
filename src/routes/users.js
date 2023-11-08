@@ -17,18 +17,15 @@ router.post("/register", async (req, res, next) => {
 			res.redirect("/users/login");
 			res.end();//
 		} else {
-			//res.redirect("/users/register");
 			res.locals.error = "Trying to create existing user";
 			res.render("register.html", { title: "Register" });
 			console.log("Trying to create existing user");
 		}
 	} else {
-		//res.redirect("/users/register");
 		res.locals.error = "One of needed fields was missing";
 		res.render("register.html", { title: "Register" });
 		console.log("Register: One of needed fields was missing");
 	}
-	//res.end();
 })
 
 router.get("/register", async (req, res, next) => {
@@ -85,31 +82,22 @@ router.post("/login", async (req, res, next) => {
 					maxAge: 86400000 // one day
 				});
 				res.redirect("/");
-				res.end(); //
+				res.end();
 			} else {
 				res.locals.error = "Incorrect password!";
-				//res.redirect("/users/login");
-				//next("/users/login");
 				res.render("login.html", { title: "Login" });
-				//res.redirect("/users/register");
 				console.log(`Incorrect user password for ${user.username}`);
-				//res.end();//
 			}
 		} else {
-			//res.redirect("/users/register");
 			res.locals.error = `Username "${fields['username']}" does not exist!`;
 			res.render("login.html", { title: "Login" });
 			console.log(`User "${fields['username']}" does not exist`);
-			//res.end();//
 		}
 	} else {
-		//res.redirect("/users/login");
 		res.locals.error = "One of needed fields was missing";
 		res.render("login.html", { title: "Login" });
 		console.log("Login: One of needed fields was missing");
-		//res.end();//
 	}
-	//res.end();
 })
 
 
