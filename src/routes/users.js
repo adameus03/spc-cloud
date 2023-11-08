@@ -15,15 +15,20 @@ router.post("/register", async (req, res, next) => {
 				password: fields["password"][0],
 			});
 			res.redirect("/users/login");
+			res.end();//
 		} else {
-			res.redirect("/users/register");
+			//res.redirect("/users/register");
+			res.locals.error = "Trying to create existing user";
+			res.render("register.html", { title: "Register" });
 			console.log("Trying to create existing user");
 		}
 	} else {
-		res.redirect("/users/register");
+		//res.redirect("/users/register");
+		res.locals.error = "One of needed fields was missing";
+		res.render("register.html", { title: "Register" });
 		console.log("Register: One of needed fields was missing");
 	}
-	res.end();
+	//res.end();
 })
 
 router.get("/register", async (req, res, next) => {
@@ -42,7 +47,7 @@ router.get("/login", async (req, res, next) => {
 		res.end();
 	}
 	else {
-		res.render("login.html", { title: "Registration" });
+		res.render("login.html", { title: "Login" });
 	}
 })
 
@@ -80,19 +85,31 @@ router.post("/login", async (req, res, next) => {
 					maxAge: 86400000 // one day
 				});
 				res.redirect("/");
+				res.end(); //
 			} else {
-				res.redirect("/users/login");
-				console.log(`Incorrect user password for {user.username}`);
+				res.locals.error = "Incorrect password!";
+				//res.redirect("/users/login");
+				//next("/users/login");
+				res.render("login.html", { title: "Login" });
+				//res.redirect("/users/register");
+				console.log(`Incorrect user password for ${user.username}`);
+				//res.end();//
 			}
 		} else {
-			res.redirect("/users/register");
-			console.log("Trying to create existing user");
+			//res.redirect("/users/register");
+			res.locals.error = `Username "${fields['username']}" does not exist!`;
+			res.render("login.html", { title: "Login" });
+			console.log(`User "${fields['username']}" does not exist`);
+			//res.end();//
 		}
 	} else {
-		res.redirect("/users/login");
+		//res.redirect("/users/login");
+		res.locals.error = "One of needed fields was missing";
+		res.render("login.html", { title: "Login" });
 		console.log("Login: One of needed fields was missing");
+		//res.end();//
 	}
-	res.end();
+	//res.end();
 })
 
 
@@ -119,6 +136,13 @@ async function checkLogin(req) {
 }
 
 /**
+ *  @param {express.Request} req 
+ */
+async function checkLoginSynchronous(req) {
+	return await checkLogin(req);
+}
+
+/**
  * 
  * @param {express.Request} req 
  * @param {express.Response} res 
@@ -136,5 +160,7 @@ async function loginGuard(req, res, next) {
 
 module.exports = {
 	router: router,
-	loginGuard: loginGuard
+	loginGuard: loginGuard,
+	checkLogin: checkLogin,
+	checkLoginSynchronous: checkLoginSynchronous
 };

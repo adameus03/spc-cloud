@@ -40,6 +40,8 @@ app.use('/', indexRouter);
 //app.use('/api', apiRouter);
 app.use("/api", api.router);
 
+//app.locals.users = users; //for access in EJS templates
+
 //app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/persons', personsRouter);
 //app.use('/users', usersRouter);

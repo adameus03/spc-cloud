@@ -1,4 +1,5 @@
 var express = require('express');
+
 var router = express.Router();
 
 /* GET home page. */
@@ -7,7 +8,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/transfer-gui', function(req,res, next) {
-  res.render('transfer-gui.html', { title: 'Express'});
+  res.render('transfer-gui.html', { title: 'Express' });
+});
+
+router.get('/about', async function(req,res,next) {
+  res.render('about.html', { title: 'Express' });
 });
 
 module.exports = router;
