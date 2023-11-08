@@ -18,12 +18,12 @@ router.post("/register", async (req, res, next) => {
 			res.end();//
 		} else {
 			res.locals.error = "Trying to create existing user";
-			res.render("register.html", { title: "Register" });
+			res.render("register.html", { title: "Registration" });
 			console.log("Trying to create existing user");
 		}
 	} else {
 		res.locals.error = "One of needed fields was missing";
-		res.render("register.html", { title: "Register" });
+		res.render("register.html", { title: "Registration" });
 		console.log("Register: One of needed fields was missing");
 	}
 })
