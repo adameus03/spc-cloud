@@ -6,7 +6,7 @@ services:
       args:
         expose_port: ${SPCSERVER_IN_PORT}
 
-    image: spccloud.azurecr.io/spc-cloud
+    image: spcclouda.azurecr.io/spc-cloud
     domainname: spc-filetransfer
     #environment:
     #  DB_SCHEMA: postgres
