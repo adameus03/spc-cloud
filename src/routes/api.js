@@ -21,10 +21,14 @@ router.post('/upload', (req, res, next) => {
         fs.writeFile(newPath, rawData, function(err){
             if(err) {
               console.log(err);
-              return res.send("Upload with an error")
+              res.locals.error = "Upload with an error.";
+              res.render('transfer-gui.html', { title: 'Transfer' });
+              //return res.send("Upload with an error")
             }
             else {
-              return res.send("Successfully uploaded");
+              res.locals.success = "Successfully uploaded the file.";
+              res.render('transfer-gui.html', { title: 'Transfer' });
+              //return res.send("Successfully uploaded");
             }
             
         });
@@ -47,7 +51,10 @@ router.get('/download', async (req, res) => {
       res.download(filepath);
     }
     else {
-      return res.send("No such file.");
+      res.locals.error = "No such file.";
+      res.render('transfer-gui.html', { title: 'Transfer' });
+      //return;
+      //return res.send("No such file.");
     }
   }
 });

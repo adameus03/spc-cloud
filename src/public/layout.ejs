@@ -14,6 +14,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert">X</button>
           </div>
         <% } %>
+        <% if(locals.success) { %>
+          <div class="alert alert-success alert-dismissible fade show">
+            <strong>Success!</strong> <%= locals.success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert">X</button>
+          </div>
+        <% } %>
         <%- body %>
       </div>
     </main>
