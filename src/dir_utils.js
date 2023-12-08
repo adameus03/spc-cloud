@@ -5,6 +5,11 @@ function createUserDirectory(user_id) {
     fs.mkdirSync(`${process.env.USRFILES_LOCATION}/${user_id}`);
 }
 
+function getFileList(user_id) {
+    return fs.readdirSync(`${process.env.USRFILES_LOCATION}/${user_id}`);
+}
+
 module.exports = {
-	createUserDirectory : createUserDirectory
+	createUserDirectory : createUserDirectory,
+    getFileList : getFileList
 }

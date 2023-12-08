@@ -1,0 +1,35 @@
+<table class="table table-hover table-dark">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if(locals.filesList) { %>
+        <% for (let i = 0; i < locals.filesList.length; i++) { %>
+          <tr>
+            <th scope="row"><%= i + 1 %></th>
+            <td><%= locals.filesList[i] %></td>
+            <td><a href="/api/download?f=<%= locals.filesList[i] %>">⬇️</a></td>
+          </tr>
+        <% } %>
+      <% } %>
+      <!--<tr>
+        <th scope="row">1</th>
+        <td>sample.jpg</td>
+        <td><a href="/api/download?f=sample.jpg">⬇️</a></td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>sample1.jpg</td>
+        <td><a href="/api/download?f=sample1.jpg">⬇️</a></td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>sample2.jpg</td>
+        <td><a href="/api/download?f=sample2.jpg">⬇️</a></td>
+      </tr>-->
+    </tbody>
+  </table>

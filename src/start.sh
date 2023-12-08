@@ -1,8 +1,8 @@
 #!/bin/sh
 SCRIPT_NICKNAME="Start script"
 VOLUME_GUARD_PATH="./persistent_volume_guard.sh"
-DOTENV_PATH="./bin/.env"
-#CONFIG_PATH="./config.sh"
+#DOTENV_PATH="./bin/.env"
+CONFIG_PATH="./config.sh"
 echo "$SCRIPT_NICKNAME: Running packages upgrade"
 apk update && apk upgrade
 #echo "Start script: starting watch whoami in background"
@@ -22,10 +22,14 @@ fi
 #}
 
 echo "$SCRIPT_NICKNAME: Setting environment variables..."
-#chmod u+rx $CONFIG_PATH
-#. $CONFIG_PATH
-chmod u+rx $DOTENV_PATH #defensive
-. $DOTENV_PATH
+chmod u+rx $CONFIG_PATH
+. $CONFIG_PATH
+#chmod u+rx $DOTENV_PATH #defensive
+#. $DOTENV_PATH
+# sed 's/^/export /' "$DOTENV_PATH" | sh
+
+
+
 if [ $? -eq 0 ]; then
     #env_setup
     #if [$? -eq 0 ]; then
