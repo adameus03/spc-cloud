@@ -1,10 +1,23 @@
 <h1>Quest: Get yourself logged in</h1>
-<form action="/users/login" method="post">
+<!--<form action="/users/login" method="post">
 	<label for="username">Username</label>
 	<input name="username" type="text" id="username" /><br>
 	<label for="password">Password</label>
 	<input name="password" type="password" id="password" />
 	<button type="submit">Log in</button>
+</form><br>-->
+<form action="/users/login" method="post">
+	<div class="form-group">
+		<label for="username">Username</label>
+		<input name="username" type="text" id="username" class="form-control" placeholder="Enter username..."/>
+	</div>
+	<div class="form-group">
+		<label for="password">Password</label>
+		<input name="password" type="password" id="password" class="form-control" placeholder="Enter password..."/>
+	</div>
+	<div class="form-group row">
+		<input type="submit" class="btn btn-info col-sm-12" value="Log in"/>
+	</div>
 </form><br>
 <a href="/users/register">Register instead</a>
 </body>
