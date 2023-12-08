@@ -28,10 +28,16 @@ const sequelize = new Sequelize({
   });
 //const sequelize = new Sequelize('sqlite::memory:');
 const Person = sequelize.define('Person', {
+    user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
     username: {
         type: Sequelize.STRING,
         allowNull: false,
-		primaryKey: true,
 		unique: true
     },
     password: {
@@ -47,12 +53,12 @@ const LoginInstance = sequelize.define("LoginInstance", {
 		unique: true,
 		primaryKey: true,
 	},
-	user: {
-		type: Sequelize.STRING,
+	user_id: {
+		type: Sequelize.INTEGER,
 		allowNull: false,
 		references: {
 			model: Person,
-			key: "username",
+			key: "user_id",
 		},
 		onUpdate: "CASCADE",
 		onDelete: "CASCADE",

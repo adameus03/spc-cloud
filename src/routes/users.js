@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require("../database.js");
 const utils = require("../utils.js");
+const dir_utils = require("../dir_utils.js");
 const formidable = require('formidable');
 
 const router = express.Router();
@@ -9,11 +10,15 @@ router.post("/register", async (req, res, next) => {
 	const form = new formidable.IncomingForm();
 	const [fields, files] = await form.parse(req); //Modern JavaScript is hell
 	if (fields["username"] && fields["username"][0] && fields["password"] && fields["password"][0]) {
-		if (!await db.Person.findByPk(fields["username"][0])) {
+		if (!await db.Person.findOne({where:{username: fields["username"][0]}})) {
 			db.Person.create({
 				username: fields["username"][0],
 				password: fields["password"][0],
 			});
+			db.Person.findOne({where:{username: fields["username"][0]}}).then((u)=>{
+				dir_utils.createUserDirectory(u.user_id);
+			});
+			
 			res.redirect("/users/login");
 			res.end();//
 		} else {
@@ -62,7 +67,7 @@ router.post("/login", async (req, res, next) => {
 	const form = new formidable.IncomingForm();
 	const [fields, files] = await form.parse(req);
 	if (fields["username"] && fields["username"][0] && fields["password"] && fields["password"][0]) {
-		const user = await db.Person.findByPk(fields["username"][0]);
+		const user = await db.Person.findOne({where:{username: fields["username"][0]}});
 		if (user) {
 			if (user.password == fields["password"][0]) {
 				let generatedId;
@@ -71,12 +76,12 @@ router.post("/login", async (req, res, next) => {
 				} while (await db.LoginInstance.findByPk(generatedId));
 				await db.LoginInstance.destroy({
 					where: {
-					  user: user.username
+					  user_id: user.user_id
 					}
 				  });
 				await db.LoginInstance.create({
 					login_id: generatedId,
-					user: user.username,
+					user_id: user.user_id
 				});
 				res.cookie("login_id", generatedId, {
 					maxAge: 86400000 // one day
