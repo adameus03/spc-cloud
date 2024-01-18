@@ -44,6 +44,45 @@ function gitCommitDirDelete(pwd, totalPath, fname) {
     return executeShellCommand(`cd ${pwd} && git add --all && git commit -m "Deleted whole directory: ${fname}"`);
 }
 
+/**
+ * 
+ * @param {*} pwd User storage directory path
+ * @param {*} commitHash Hash of the commit to move to
+ * @returns a Promise that resolves when the command is executed
+ */
+function gitMoveToCommit(pwd, commitHash) {
+    return executeShellCommand(`cd ${pwd} && git checkout ${commitHash}`);
+}
+
+/**
+ * 
+ * @param {*} pwd User storage directory path
+ * @returns Promise that resolves with an array of commit objects in the form { hash, message }
+ */
+function gitGetCommits(pwd) {
+    return new Promise((resolve, reject) => {
+        let commits = [];
+        // store commits as objects { hash, message }
+        executeShellCommand(`cd ${pwd} && git log --pretty=format:"%H,%s"`).then((stdout) => {
+            let lines = stdout.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                let hash = line.substr(0, line.indexOf(','));
+                let message = line.substr(line.indexOf(',') + 1);
+                commits.push({
+                    hash: hash,
+                    message: message
+                });
+            }
+            resolve(commits);
+        }).catch((err) => {
+            reject(err);
+        });
+    });
+}
+
+
+
 
 module.exports = {
     executeShellCommand: executeShellCommand,
@@ -51,5 +90,10 @@ module.exports = {
     gitCommitFileUpload: gitCommitFileUpload,
     gitCommitIncompleteFileUpload: gitCommitIncompleteFileUpload,
     gitCommitFileDelete: gitCommitFileDelete,
-    gitCommitDirDelete: gitCommitDirDelete
+    gitCommitDirDelete: gitCommitDirDelete,
+    gitMoveToCommit: gitMoveToCommit,
+    versionControlAPI: {
+        moveToCommit: gitMoveToCommit,
+        getCommits: gitGetCommits
+    }
 };
