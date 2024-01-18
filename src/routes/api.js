@@ -8,6 +8,8 @@ const db = require('../database.js');
 const archiver = require('archiver');
 const crypto = require('crypto');
 const shell = require('../shell.js');
+const sharing = require('../sharing.js');
+const users=require('../routes/users.js'); 
 
 
 var router = express.Router();
@@ -310,7 +312,7 @@ router.get('/share', async (req, res) => {
       res.locals.error = "Invalid access key";
     }
   }).catch((error) => {
-    console.error(`Произошла ошибка при поиске пользователя: ${error.message}`);
+    console.error(`Error: ${error.message}`);
   });
 
   const paddingLength = 8 - (password.length % 8);
@@ -334,6 +336,10 @@ router.get('/share', async (req, res) => {
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
   let decryptedData = decipher.update(encryptedFileName, 'base64', 'utf-8');
   decryptedData += decipher.final('utf-8');
+
+  let userId = users.getUserIdFromUserName(personName);
+  sharing.executeShareInfo(new ShareInfo(userId, session.dataValues.user_id, decryptedData, password));
+
 
   return decryptedData;
   });
