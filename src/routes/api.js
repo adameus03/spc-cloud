@@ -93,6 +93,79 @@ router.post('/upload', (req, res, next) => {
   });
 });
 
+router.post('/delete', async (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.parse(req, async function(err, fields, files) {
+    if(fields.f){
+      let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
+      let filepath = `${process.env.USRFILES_LOCATION}/${session.user_id}/${fields.f}`;
+      if(fs.existsSync(filepath)){
+        console.log(`file exists: ${filepath}`);
+        if (!fs.lstatSync(filepath).isDirectory()) {
+          console.log(`FILE DELETE ${filepath}`);
+          fs.unlinkSync(filepath);
+          //res.locals.success = "Successfully deleted the file.";
+          //res.render('transfer-gui.html', { title: 'Transfer' });
+          res.send({ success: "Successfully deleted the file."});
+        } else {
+          console.log(`DIRECTORY DELETE ${filepath}`);
+          fs.rmdirSync(filepath, { recursive: true });
+          //res.locals.success = "Successfully deleted the directory.";
+          //res.render('transfer-gui.html', { title: 'Transfer' });
+          res.send({ success: "Successfully deleted the directory."});
+        }
+        
+        //res.render('transfer-gui.html', { title: 'Transfer' });
+      }
+      else {
+        //res.locals.error = "No such file.";
+        //res.render('transfer-gui.html', { title: 'Transfer' });
+        res.send({ error: "No such file."});
+        //return;
+        //return res.send("No such file.");
+      }
+    }
+    else {
+      //res.locals.error = "No file specified.";
+      //res.render('transfer-gui.html', { title: 'Transfer' });
+      res.send({ error: "No file specified."});
+      //return;
+      //return res.send("No file specified.");
+    }
+  });
+
+  /*if(req.body.f){
+    let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
+    let filepath = `${process.env.USRFILES_LOCATION}/${session.user_id}/${req.body.f}`;
+    if(fs.existsSync(filepath)){
+      console.log(`file exists: ${filepath}`);
+      if (!fs.lstatSync(filepath).isDirectory()) {
+        console.log(`FILE DELETE ${filepath}`);
+        fs.unlinkSync(filepath);
+        //res.locals.success = "Successfully deleted the file.";
+        res.send({ success: "Successfully deleted the file."});
+      } else {
+        console.log(`DIRECTORY DELETE ${filepath}`);
+        fs.rmdirSync(filepath, { recursive: true });
+        //res.locals.success = "Successfully deleted the directory.";
+        res.send({ success: "Successfully deleted the directory."});
+      }
+      
+      //res.render('transfer-gui.html', { title: 'Transfer' });
+    }
+    else {
+      //res.locals.error = "No such file.";
+      //res.render('transfer-gui.html', { title: 'Transfer' });
+      res.send({ error: "No such file."});
+    }
+  }
+  else {
+    //res.locals.error = "No file specified.";
+    //res.render('transfer-gui.html', { title: 'Transfer' });
+    res.send({ error: "No file specified."});
+  }*/
+});
+
 router.get('/download', async (req, res) => {
   if(req.query.f){
     //let filepath = `./usrFiles/${req.query.f}`;

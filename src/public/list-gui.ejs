@@ -9,13 +9,14 @@
       <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Size</th>
-      <th scope="col">Download</th>
+      <th scope="col">Mode</th>
+      <th scope="col">Ops</th>
     </tr>
   </thead>
   <tbody>
     <% if(locals.filesList) { %>
       <% for (let i = 0; i < locals.filesList.length; i++) { %>
-        <tr>
+        <tr id="tr<%= i %>">
           <th scope="row"><%= i + 1 %></th>
           <td>
             <% if(locals.filesList[i].isDir) { %>
@@ -41,7 +42,22 @@
               return href;
             };
           %>
-          <td><a href="<%= getDownloadHref(locals.filesList[i].name) %>">⬇️</a></td>
+          <td>
+            <span title="private">🔐</span>
+            <span title="shared">🌐</span>
+            <span title="can read">👁️</span>
+            <span title="can write">🖊️</span>
+            <span title="you own this">😎</span>
+          </td>
+          <td>
+            <a href="<%= getDownloadHref(locals.filesList[i].name) %>" title="Download">⬇️</a>
+            <% if(locals.filesList[i].isDir) { %>
+              <a href="#" title="Propagate">📢</a>
+            <% } else { %>
+              <a href="#"> </a>
+            <% } %>
+            <span title="Throw to rubbish" class="spc-navigable" onclick="deleteFile('<%= locals.filesList[i].name %>', '<%= locals.currentDirectory %>', '<%= i %>')">🗑️</span>
+          </td>
         </tr>
       <% } %>
     <% } %>
@@ -69,10 +85,10 @@
   }
 </style>
 <script>
-  function navigationTriggered(fname, parentDir) {
+  function navigationTriggered(fname, currDir) {
     //alert(fname); //for now
-    let newHref = "/list-gui?d=" + parentDir;
-    if(parentDir.endsWith("/")) {
+    let newHref = "/list-gui?d=" + currDir;
+    if(currDir.endsWith("/")) {
       newHref += fname;
     } else {
       newHref += "/" + fname;
@@ -100,5 +116,60 @@
       currDir = currDir.substring(1);
     }*/
     window.location.href = "/list-gui?d=" + currDir;
+  }
+
+  function deleteFile(fname, currDir, trId) {
+    let delFilePath = currDir;
+    if (currDir.endsWith("/")) {
+      delFilePath += fname;
+    } else {
+      delFilePath += "/" + fname;
+    }
+    /*$.post("/api/delete", {f: delFilePath}, function(data, status) {
+
+      if(status === "success") {
+        if (data.success) {
+          alert(data.success);
+        }
+        else if (data.error) {
+          alert(data.error);
+        }
+        else {
+          alert(`Error deleting file. Got unexpected response: ${data}`);
+        }
+        
+        //alert("File deleted successfully");
+        //window.location.href = "/list-gui?d=" + currDir;
+        $("#tr" + trId).remove();
+      } else {
+        alert(`Error deleting file. Status: ${status}; data: ${data}`);
+      }
+    });*/
+    $.ajax({
+      type: 'POST',
+      url: '/api/delete',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      dataType: 'json',
+      data: JSON.stringify({"f": delFilePath}),
+      success: function(data, status) {
+        if (data.success) {
+          alert(data.success);
+        }
+        else if (data.error) {
+          alert(data.error);
+        }
+        else {
+          alert(`Error deleting file. Got unexpected response: ${data}`);
+        }
+        
+        //alert("File deleted successfully");
+        //window.location.href = "/list-gui?d=" + currDir;
+        $("#tr" + trId).remove();
+      },
+      error: (jqXHR, textStatus, errorThrown) => {
+        alert(`Error deleting file. Status: ${textStatus}; data: ${jqXHR.responseText}`);
+      }
+    });
   }
 </script>

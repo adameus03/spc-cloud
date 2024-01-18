@@ -3,7 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-////var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var cors = require('cors');
 var expressLayouts = require('express-ejs-layouts'); 
 
@@ -27,11 +27,15 @@ app.use(express.json());
 //app.use(express.urlencoded({ extended: false })); // doesn't work with formidable
 app.use(cookieParser());
 
+// BODYPARSER AND FORMIDABLE DO NOT GET ON WELL
 ////app.use(bodyParser.urlencoded({ extended: true }));
 ////app.use(bodyParser.json());
 ////app.use(bodyParser.urlencoded({
 ////    extended: true
-////}));
+////})); 
+
+//app.use()
+
 app.use(cors());
 app.use(expressLayouts);
 
