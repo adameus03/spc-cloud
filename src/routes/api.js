@@ -318,7 +318,7 @@ router.get('/share', async (req, res) => {
     password += '\0'.repeat(paddingLength); // Добавляем нули до нужной длины
   }
 
-  const staticSalt = Buffer.from('staticsalt123456');
+  const staticSalt = new Uint8Array(['staticsalt123456']);
   const iterations = 10000;
   let derivedKey = '';
   crypto.pbkdf2(password, staticSalt, iterations, 32, 'sha256', (err, key) => {
@@ -331,13 +331,11 @@ router.get('/share', async (req, res) => {
   const key = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 32, 'sha256');
   const iv = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 16, 'sha256');
 
-  console.log(derivedKey);
-
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
   let decryptedData = decipher.update(encryptedFileName, 'base64', 'utf-8');
   decryptedData += decipher.final('utf-8');
 
-  console.log('Decrypted Data:', decryptedData);
+  return decryptedData;
   });
 
 
