@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const shell = require('./shell.js');
+
 
 function getFilesizeInBytes(filename) {
     var stats = fs.statSync(filename);
@@ -24,6 +26,7 @@ function getHumanReadableFileSize(filename) {
 function createUserDirectory(user_id) {
     console.log(`Executing mkdir ${process.env.USRFILES_LOCATION}/${user_id}`);
     fs.mkdirSync(`${process.env.USRFILES_LOCATION}/${user_id}`);
+    shell.gitInit(`${process.env.USRFILES_LOCATION}/${user_id}`);
 }
 
 function getFileList(user_id, d='') {
