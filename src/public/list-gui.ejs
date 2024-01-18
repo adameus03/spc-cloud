@@ -14,7 +14,7 @@
           <th scope="row"><%= i + 1 %></th>
           <td>
             <% if(locals.filesList[i].isDir) { %>
-              <b class="spc-navigable" onclick="navigationTriggered('<%= locals.filesList[i].name %>')">
+              <b class="spc-navigable" onclick="navigationTriggered('<%= locals.filesList[i].name %>', '<%= locals.currentDirectory %>')">
             <% } %>
             <%= locals.filesList[i].name %>
             <% if(locals.filesList[i].isDir) { %>
@@ -22,7 +22,21 @@
             <% } %>
           </td>
           <td><%= locals.filesList[i].size %></td>
-          <td><a href="/api/download?f=<%= locals.filesList[i].name %>">⬇️</a></td>
+          <%
+            let getDownloadHref = (fname) => {
+              let href = "/api/download?f=";
+              if(locals.currentDirectory.endsWith('/')) {
+                href += locals.currentDirectory + fname;
+              } else {
+                href += locals.currentDirectory + '/' + fname;
+              }
+              if(href.startsWith('/')) {
+                href = href.substring(1);
+              }
+              return href;
+            };
+          %>
+          <td><a href="<%= getDownloadHref(locals.filesList[i].name) %>">⬇️</a></td>
         </tr>
       <% } %>
     <% } %>
@@ -50,7 +64,14 @@
   }
 </style>
 <script>
-  function navigationTriggered(fname) {
-    alert(fname); //for now
+  function navigationTriggered(fname, parentDir) {
+    //alert(fname); //for now
+    let newHref = "/list-gui?d=" + parentDir;
+    if(parentDir.endsWith("/")) {
+      newHref += fname;
+    } else {
+      newHref += "/" + fname;
+    }
+    window.location.href = newHref;
   }
 </script>

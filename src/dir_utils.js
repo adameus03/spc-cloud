@@ -36,8 +36,8 @@ function getFileList(user_id, d='') {
         return {
             name: fname,
             //size: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}/${fname}`).size,
-            size: getHumanReadableFileSize(`${process.env.USRFILES_LOCATION}/${user_id}/${fname}`),
-            isDir: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}/${fname}`).isDirectory()
+            size: getHumanReadableFileSize(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`),
+            isDir: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`).isDirectory()
         }
     });
 }
