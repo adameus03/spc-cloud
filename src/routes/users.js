@@ -151,9 +151,25 @@ async function loginGuard(req, res, next) {
 	}
 }
 
+/**
+ * 
+ * @param {*} username 
+ * @returns ID of the user with the given username or null if no such user exists
+ */
+async function getUserIdFromUsername(username) {
+	const user = await db.Person.findOne({where:{username: username}});
+	if (user) {
+		return user.user_id;
+	} else {
+		return null;
+	}
+}
+
 module.exports = {
 	router: router,
 	loginGuard: loginGuard,
 	checkLogin: checkLogin,
-	checkLoginSynchronous: checkLoginSynchronous
+	checkLoginSynchronous: checkLoginSynchronous,
+
+	getUserIdFromUsername: getUserIdFromUsername
 };

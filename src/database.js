@@ -63,7 +63,49 @@ const LoginInstance = sequelize.define("LoginInstance", {
 		onUpdate: "CASCADE",
 		onDelete: "CASCADE",
 	}
-})
+});
+
+const ShareInfo = sequelize.define("ShareInfo", {
+    share_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    sharer_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: Person,
+            key: "user_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    },
+    sharee_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: Person,
+            key: "user_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    },
+    dirRelPath: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    passKey: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    isReadOnly: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+    }
+});
 
 module.exports = {
     sequelize: sequelize,
