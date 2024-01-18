@@ -15,7 +15,15 @@ router.get('/transfer-gui', function(req,res, next) {
 
 router.get('/list-gui', async function(req,res, next) {
   let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
-  res.locals.filesList = dir_utils.getFileList(session.user_id);
+  //req.query.d
+  if (req.query.d) {
+    res.locals.currentDirectory = req.query.d;
+    res.locals.filesList = dir_utils.getFileList(session.user_id, req.query.d);
+  }
+  else {
+    res.locals.currentDirectory = "/";
+    res.locals.filesList = dir_utils.getFileList(session.user_id);
+  }
 
   res.render('list-gui', { title: 'List' });
 });

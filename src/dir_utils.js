@@ -26,8 +26,13 @@ function createUserDirectory(user_id) {
     fs.mkdirSync(`${process.env.USRFILES_LOCATION}/${user_id}`);
 }
 
-function getFileList(user_id) {
-    return fs.readdirSync(`${process.env.USRFILES_LOCATION}/${user_id}`).map((fname) => {
+function getFileList(user_id, d='') {
+    //check if dir exists
+    if (!fs.existsSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}`)) {
+        console.log(`User #${user_id} tried to access non-existing directory ${process.env.USRFILES_LOCATION}/${user_id}/${d}!!!`);
+        return [];
+    }
+    return fs.readdirSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}`).map((fname) => {
         return {
             name: fname,
             //size: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}/${fname}`).size,
