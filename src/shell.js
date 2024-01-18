@@ -81,6 +81,16 @@ function gitGetCommits(pwd) {
     });
 }
 
+/**
+ * 
+ * @param {*} target 
+ * @param {*} linkpath 
+ * @param {*} symlinkDomain 
+ * @returns Promise that resolves when the command is executed
+ */
+function createSymlink(target, linkpath, sharerName, symlinkDomain = 'shared') {
+    return executeShellCommand(`cd ${pwd} && ln -s ${target} ${linkpath}.${sharerName}.${symlinkDomain}`);
+}
 
 
 
@@ -95,5 +105,8 @@ module.exports = {
     versionControlAPI: {
         moveToCommit: gitMoveToCommit,
         getCommits: gitGetCommits
+    },
+    symlink: {
+        create: createSymlink
     }
 };
