@@ -8,6 +8,7 @@ COPY src/package.json src/package-lock.json ./
 RUN npm install
 # RUN apk add sqlite && mkdir -p /pers/sqlite/databases
 RUN apk add sqlite
+RUN apk add git
 # RUN mkdir -p /testif/this/is/added
 COPY src/ .
 COPY .env ./bin/
