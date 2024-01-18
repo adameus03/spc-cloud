@@ -49,6 +49,7 @@ app.use(users.loginGuard);
 app.use('/', indexRouter);
 //app.use('/api', apiRouter);
 app.use("/api", api.router);
+app.use("/file-management", file_management);
 
 //app.locals.users = users; //for access in EJS templates
 
