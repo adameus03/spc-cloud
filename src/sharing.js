@@ -101,6 +101,8 @@ function checkPermission(sharee_id, dirAbsPath, permission) {
 module.exports = {
     ShareInfo: ShareInfo,
     executeShareInfo: executeShareInfo,
-    checkPermission: checkPermission
+    checkPermission: checkPermission,
+    SHARE_READ_PERMISSION: SHARE_READ_PERMISSION,
+    SHARE_WRITE_PERMISSION: SHARE_WRITE_PERMISSION
 }
 
