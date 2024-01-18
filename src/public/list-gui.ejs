@@ -1,3 +1,8 @@
+<p>
+  <span class="spc-navigable" title="Return to parent dir" onclick="returnToParent('<%= locals.currentDirectory %>')">↩️</span>
+  <span class="spc-navigable" title="Refresh this dir" onclick="reloadCurrentDir('<%= locals.currentDirectory %>')">🔄</span>
+  <span> Current directory: <i><%= locals.currentDirectory %></i></span>
+</p>
 <table class="table table-hover table-dark">
   <thead>
     <tr>
@@ -73,5 +78,27 @@
       newHref += "/" + fname;
     }
     window.location.href = newHref;
+  }
+
+  function returnToParent(currDir) {
+    let newHref = "/list-gui?d=" + currDir;
+    if(currDir.endsWith("/")) {
+      newHref = newHref.substring(0, newHref.length - 1);
+    }
+    let lastSlashIndex = newHref.lastIndexOf("/");
+    if(lastSlashIndex > -1) {
+      newHref = newHref.substring(0, lastSlashIndex /*+1*/);
+    }
+    window.location.href = newHref;
+  }
+
+  function reloadCurrentDir(currDir) {
+    /*if (currDir.endsWith("/")) {
+      currDir = currDir.substring(0, currDir.length - 1);
+    }
+    if (currDir.startsWith("/")) {
+      currDir = currDir.substring(1);
+    }*/
+    window.location.href = "/list-gui?d=" + currDir;
   }
 </script>
