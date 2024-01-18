@@ -7,12 +7,18 @@ var logger = require('morgan');
 var cors = require('cors');
 var expressLayouts = require('express-ejs-layouts'); 
 
+//import {bindFlmngr} from "@flmngr/flmngr-server-node-express";
+var flmngr = require("@flmngr/flmngr-server-node-express");
+
+
+
 
 var indexRouter = require('./routes/index');
 //var apiRouter = require('./routes/api');
 //var personsRouter = require('./routes/persons'); //
 const api = require('./routes/api.js');
 const users = require('./routes/users.js');
+const file_management = require('./routes/file_management.js');
 
 var app = express();
 
@@ -45,5 +51,18 @@ app.use("/api", api.router);
 //app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/persons', personsRouter);
 //app.use('/users', usersRouter);
+
+
+/**
+ * @note Tried to integrate with flmngr, but gave up
+ */
+flmngr.bindFlmngr({
+    app: app,
+    urlFileManager: "/flmngr",
+    urlFiles: "/files/",
+    dirFiles: "/pers/usrfiles"
+});
+
+//app.use("/manager", file_management.router);
 
 module.exports = app;

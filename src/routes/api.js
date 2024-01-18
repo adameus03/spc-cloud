@@ -1,10 +1,51 @@
 var express = require('express');
 const fs = require('fs');
-const path = require('path');
+//const path = require('path');
+//const mkdirp = require('mkdirp');
+var getDirName = require('path').dirname;
 const formidable = require('formidable');
 const db = require('../database.js');
+const archiver = require('archiver');
 
 var router = express.Router();
+
+/*function writeFile(path, contents, cb) {
+  mkdirp.mkdirpNative(getDirName(path), function (err) {
+    if (err) return cb(err);
+    
+    fs.writeFile(path, contents, cb);
+  });
+}*/
+function writeFile(path, contents, cb) {
+  fs.mkdir(getDirName(path), { recursive: true}, function (err) {
+    if (err) return cb(err);
+
+    fs.writeFile(path, contents, cb);
+  });
+}
+
+/**
+ * @param {String} sourceDir: /some/folder/to/compress
+ * @param {String} outPath: /path/to/created.zip
+ * @returns {Promise}
+ */
+function zipDirectory(sourceDir, outPath) {
+  const archive = archiver('zip', { zlib: { level: 9 }});
+  const stream = fs.createWriteStream(outPath);
+
+  return new Promise((resolve, reject) => {
+    archive
+      .directory(sourceDir, false)
+      .on('error', err => reject(err))
+      .pipe(stream)
+    ;
+
+    stream.on('close', () => resolve());
+    archive.finalize();
+  });
+}
+
+const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
 router.post('/upload', (req, res, next) => {
     const form = new formidable.IncomingForm();
@@ -24,7 +65,7 @@ router.post('/upload', (req, res, next) => {
           console.log(`FILE UPLOAD ${newPath}`);
           let rawData = fs.readFileSync(oldPath);
           
-          fs.writeFile(newPath, rawData, function(err){
+          writeFile(newPath, rawData, function(err){
               if(err) {
                 console.log(`Error while uploading to ${newPath}: ${err}`);
                 uploadSucceeded = false;
@@ -59,9 +100,42 @@ router.get('/download', async (req, res) => {
     let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
 
     let filepath = `${process.env.USRFILES_LOCATION}/${session.user_id}/${req.query.f}`;
-    console.log(`FILE DOWNLOAD ${filepath}`);
     if(fs.existsSync(filepath)){
-      res.download(filepath);
+      console.log(`file exists: ${filepath}`);
+      if (!fs.lstatSync(filepath).isDirectory()) {
+        console.log(`FILE DOWNLOAD ${filepath}`);
+        res.download(filepath, (err)=>{
+          if (err) {
+            console.log(`file download error: ${err}`);
+          }
+        });
+      } else {
+        console.log(`DIRECTORY DOWNLOAD ${filepath}`);
+        /*res.zip({
+          files: [
+            { path: filepath, name: req.query.f }
+          ],
+          filename: `${req.query.f}.zip`
+        });*/
+        
+        let zippath = `/tmp/${genRanHex(32)}.zip`;
+        zipDirectory(filepath, zippath).then(() => {
+          res.download(zippath, (err)=>{
+            if (err) {
+              console.log(`file download error: ${err}`);
+            }
+            fs.unlink(zippath, (err) => {
+              if (err) {
+                console.log(`file delete error: ${err}`);
+              }
+            });
+          });
+        }).catch((err) => {
+          console.log(`zip error: ${err}`);
+          res.locals.error = "Error while zipping";
+          res.render('transfer-gui.html', { title: 'Transfer' });
+        });
+      }
     }
     else {
       res.locals.error = "No such file.";

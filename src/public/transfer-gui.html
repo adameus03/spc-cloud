@@ -1,10 +1,132 @@
-<h1>FILE UPLOADING</h1>
-<form action="/api/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="filetoupload" multiple="multiple"><br>
-  <input type="submit" value="Store file">
-</form>
+<canvas id="canvas"></canvas>
+<h1>FILE(S) UPLOADING</h1>
+<div><form action="/api/upload" method="post" enctype="multipart/form-data">
+  <div><input type="file" name="filetoupload" multiple="multiple"></div>
+  <div><input type="submit" value="Store file"></div>
+</form></div>
+<h1>DIRECTORY UPLOADING</h1>
+<div><form action="/api/upload" method="post" enctype="multipart/form-data">
+  <div><input type="file" name="filetoupload" multiple="multiple" webkitdirectory mozdirectory></div>
+  <div><input type="submit" value="Store directory"></div>
+</form></div>
 <h1>FILE DOWNLOADING</h1>
-<form action="/api/download" method="get">
+<div><form action="/api/download" method="get">
   <input type="text" placeholder="Enter filename..." name="f">
   <input type="submit" value="Download file">
-</form>
+</form></div>
+<h1>DOWNLOAD DIRECTORY AS ZIP</h1>
+<div><form action="/api/download" method="get">
+  <input type="text" placeholder="Enter directory name..." name="f">
+  <input type="submit" value="Download directory">
+</form></div>
+
+<style>
+  #canvas {
+    opacity: 0.5;
+  }
+  input {
+    margin: 10px;
+  }
+</style>
+<script>
+  /*
+      for each animation step the variable "step" increases by 1. The step variable is converted to binary system. Let's call this binary number "bits". If the digits count of "bits" variable is odd, then the "0" digit is inserted at the beginning of "bits". "bits" are splitted into digit pairs. There are only 4 combinations of the digits colocation in the pair: 00, 11, 10 or 01. Each combination there is a direction assigned. 00 means "go down", 11 -> up, 10 -> left and 01 -> right.
+  */
+
+
+  var canvas, context;
+  var crosshair = [20, 200];
+  var step = 1;
+  window.onload = function(){
+      canvas = document.getElementById("canvas");
+      canvas.width = 500;
+      canvas.height = 300;
+      context = canvas.getContext("2d");
+      context.fillStyle = "#000";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = "#0F0"
+      context.beginPath();
+      context.moveTo(crosshair[0], crosshair[1]);
+      window.requestAnimationFrame(function draw(){
+          drawNext();
+          window.requestAnimationFrame(draw);
+      });
+  }
+  function drawNext(){
+      var bits = step.toBinary();
+      if(bits.length%2!==0) bits="0"+bits;
+      for(var v=0; v<bits.length; v+=2){
+          var opcode = bits.substring(v, v+2);
+          switch(opcode){
+              case "00":
+                  moveCrosshair([0, 10]);
+                  break;
+              case "11":
+                  moveCrosshair([0, -10]);
+                  break;
+              case "10":
+                  moveCrosshair([-10, 0]);
+                  break;
+              case "01":
+                  moveCrosshair([10, 0]);
+                  break;
+          }
+          
+          context.lineTo(crosshair[0], crosshair[1]);
+          context.stroke();
+      }
+      ++step;
+  }
+  function moveCrosshair(vector){
+      crosshair[0]+=vector[0];
+      crosshair[1]+=vector[1];
+      var aboveMaxX = crosshair[0]-canvas.width;
+      var aboveMaxY = crosshair[1]-canvas.height;
+      if(aboveMaxX>0){
+          crosshair[0] = aboveMaxX;
+          context.moveTo(0, crosshair[1]);
+      }
+      if(aboveMaxY>0){
+          crosshair[1] = aboveMaxY;
+          context.moveTo(crosshair[0], 0);
+      }
+      if(crosshair[0]<0){
+          crosshair[0] = canvas.width+crosshair[0];
+          context.moveTo(canvas.width, crosshair[1]);
+      }
+      if(crosshair[1]<0){
+          crosshair[1] = canvas.height+crosshair[1];
+          context.moveTo(crosshair[0], canvas.height);
+      }
+      
+  }
+
+  Number.prototype.toBinary = function(){//returns binary string
+      
+      var natural = this<0?false:true;
+      var decimal = Math.abs(this);
+      var bits = "";
+      var end = false;
+      while(!end){
+          
+          bits += (decimal%2).toString();
+          if(decimal===1 || decimal===0){
+              end = true;
+          }
+          if(decimal%2===1) decimal-=1;
+          decimal/=2;
+      }
+      var res = bits.reverse();
+      if(!natural) bits = "-"+bits;
+      
+      return res;
+  }
+  String.prototype.reverse = function(){
+      var res = "";
+      for(var v=this.length-1; v>=0; v--){
+          res+=this[v];
+      }
+      return res;
+  }
+
+</script>
