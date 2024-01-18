@@ -6,6 +6,7 @@ var getDirName = require('path').dirname;
 const formidable = require('formidable');
 const db = require('../database.js');
 const archiver = require('archiver');
+const crypto = require('crypto');
 
 var router = express.Router();
 
@@ -184,12 +185,12 @@ router.get('/download', async (req, res) => {
         });
       } else {
         console.log(`DIRECTORY DOWNLOAD ${filepath}`);
-        /*res.zip({
-          files: [
-            { path: filepath, name: req.query.f }
-          ],
-          filename: `${req.query.f}.zip`
-        });*/
+        //res.zip({
+        //  files: [
+        //    { path: filepath, name: req.query.f }
+        //  ],
+        //  filename: `${req.query.f}.zip`
+        //});
         
         let zippath = `/tmp/${genRanHex(32)}.zip`;
         zipDirectory(filepath, zippath).then(() => {
@@ -217,7 +218,102 @@ router.get('/download', async (req, res) => {
       //return res.send("No such file.");
     }
   }
+
 });
+
+router.get('/share', async (req, res) => {
+  let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
+  let filepath = `${process.env.USRFILES_LOCATION}/${session.user_id}/${req.query.f}`;
+
+  let encryptedFileName = req.query.accessKey;
+  let personName = req.query.userName;
+  let fileToDownload = req.query.fileToDownload;
+
+  let password = '';
+
+  await db.Person.findOne({
+    where: {
+      username: personName
+    }
+  }).then((user) => {
+    if (user) {
+      password = user.password;
+    } else {
+      res.locals.error = "Invalid access key";
+    }
+  }).catch((error) => {
+    console.error(`Произошла ошибка при поиске пользователя: ${error.message}`);
+  });
+
+  const paddingLength = 8 - (password.length % 8);
+  if (paddingLength !== 8) {
+    password += '\0'.repeat(paddingLength); // Добавляем нули до нужной длины
+  }
+
+  const staticSalt = Buffer.from('staticsalt123456');
+  const iterations = 10000;
+  let derivedKey = '';
+  crypto.pbkdf2(password, staticSalt, iterations, 32, 'sha256', (err, key) => {
+    if (err) throw err;
+    derivedKey = key;
+  });
+
+  const algorithm = 'aes-256-cbc';
+
+  const key = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 32, 'sha256');
+  const iv = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 16, 'sha256');
+
+  console.log(derivedKey);
+
+  const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  let decryptedData = decipher.update(encryptedFileName, 'base64', 'utf-8');
+  decryptedData += decipher.final('utf-8');
+
+  console.log('Decrypted Data:', decryptedData);
+  });
+
+
+
+router.get('/getKey', async (req, res, next) => {
+  let fileName = req.query.currentDirectory + req.query.fileName;
+  let session = await db.LoginInstance.findByPk(req.cookies["login_id"]);
+  let password = ''
+
+
+  await db.Person.findOne({
+      where: {
+      user_id: session.dataValues.user_id
+    }
+  }).then((user) => {
+    if (user) {
+      password = user.password;
+    } else {
+      res.locals.error = "Invalid user data";
+    }
+  }).catch((error) => {
+    console.error(`Error: ${error.message}`);
+  });
+
+  const staticSalt = new Uint8Array(['staticsalt123456']);
+  const iterations = 10000;
+  let derivedKey = '';
+  crypto.pbkdf2(password, staticSalt, iterations, 32, 'sha256', (err, key) => {
+    if (err) throw err;
+    derivedKey = key;
+  });
+
+  const algorithm = 'aes-256-cbc';
+
+  const key = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 32, 'sha256');
+  const iv = crypto.pbkdf2Sync(derivedKey, staticSalt, 100000, 16, 'sha256');
+
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
+  let encryptedData = cipher.update(fileName, 'utf-8', 'base64');
+  encryptedData += cipher.final('base64');
+
+  res.send({ success: encryptedData});
+});
+
 
 module.exports = {
 	router: router

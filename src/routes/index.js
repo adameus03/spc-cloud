@@ -32,4 +32,8 @@ router.get('/about', async function(req,res,next) {
   res.render('about.html', { title: 'About' });
 });
 
+router.get('/shared-directory', async function(req,res,next) {
+  res.render('shared-directory.html', {title: 'Shared directory'});
+});
+
 module.exports = router;

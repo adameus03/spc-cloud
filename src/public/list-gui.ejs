@@ -43,8 +43,8 @@
             };
           %>
           <td>
-            <span title="private">🔐</span>
-            <span title="shared">🌐</span>
+            <span title="private" >🔐</span>
+            <span title="shared" class="spc-navigable" onclick="getKey('<%= locals.filesList[i].name %>', '<%= locals.currentDirectory %>')">🌐</span>
             <span title="can read">👁️</span>
             <span title="can write">🖊️</span>
             <span title="you own this">😎</span>
@@ -116,6 +116,39 @@
       currDir = currDir.substring(1);
     }*/
     window.location.href = "/list-gui?d=" + currDir;
+  }
+
+  function getKey(fileName, currentDirectory) {
+    console.log(fileName + currentDirectory);
+    $.ajax({
+      type: 'GET',
+      url: '/api/getKey',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      dataType: 'json',
+      data: {
+        "fileName": fileName,
+        "currentDirectory": currentDirectory    
+      },
+      success: function(data, status) {
+        if (data.success) {
+          alert(data.success);
+        }
+        else if (data.error) {
+          alert(data.error);
+        }
+        else {
+          alert(`Error getting key. Got unexpected response: ${data}`);
+        }
+        
+        //alert("File deleted successfully");
+        //window.location.href = "/list-gui?d=" + currDir;
+        $("#tr" + trId).remove();
+      },
+      error: (jqXHR, textStatus, errorThrown) => {
+        alert(`Error getting key. Status: ${textStatus}; data: ${jqXHR.responseText}`);
+      }
+    });
   }
 
   function deleteFile(fname, currDir, trId) {
