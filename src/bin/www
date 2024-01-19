@@ -10,7 +10,9 @@ require('dotenv').config({ path: path.resolve(__dirname, './.env') })
 
 var app = require('../app');
 var debug = require('debug')('src:server');
-var http = require('http');
+//var http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -29,7 +31,17 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+
+var privateKey = fs.readFileSync('/pers/privkey.pem', 'utf8');
+var certificate = fs.readFileSync('/pers/cert.pem', 'utf8');
+
+
+var server = https.createServer({
+  key: privateKey,
+  cert: certificate
+}, app);
+
+//var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

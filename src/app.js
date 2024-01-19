@@ -1,4 +1,6 @@
 var express = require('express');
+
+
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -12,7 +14,7 @@ var flmngr = require("@flmngr/flmngr-server-node-express");
 
 
 
-
+var superindexRouter = require('./routes/superindex');
 var indexRouter = require('./routes/index');
 //var apiRouter = require('./routes/api');
 //var personsRouter = require('./routes/persons'); //
@@ -43,6 +45,7 @@ app.engine('html', require('ejs').renderFile);
 app.set("views", "./public");
 app.set('view engine', 'ejs');
 
+app.use('/', superindexRouter);
 app.use("/users", users.router);
 app.use(users.loginGuard);
 
@@ -69,5 +72,6 @@ flmngr.bindFlmngr({
 });
 
 //app.use("/manager", file_management.router);
+
 
 module.exports = app;
