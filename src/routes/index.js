@@ -6,7 +6,16 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index.html', { title: 'Index' });
+  db.LoginInstance.findByPk(req.cookies["login_id"]).then((loginInstance) => {
+    db.Person.findByPk(loginInstance.user_id).then((user) => {
+      res.locals.username = user.username;
+      res.render('index', { title: 'Index' });
+    }).catch((err) => {
+      console.log(`Error while seeking Person: ${err}`);
+    });
+  }).catch((err) => {
+    console.log(`Error while seeking LoginInstance: ${err}`);
+  });
 });
 
 router.get('/transfer-gui', function(req,res, next) {

@@ -83,7 +83,7 @@ const ShareInfo = sequelize.define("ShareInfo", {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
     },
-    sharee_id: {
+    /*sharee_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -92,7 +92,7 @@ const ShareInfo = sequelize.define("ShareInfo", {
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
-    },
+    },*/
     dirRelPath: {
         type: Sequelize.STRING,
         allowNull: false
@@ -107,9 +107,41 @@ const ShareInfo = sequelize.define("ShareInfo", {
     }
 });
 
+const ActiveShare = sequelize.define("ActiveShare", {
+    active_share_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    share_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: ShareInfo,
+            key: "share_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    },
+    sharee_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: Person,
+            key: "user_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+    }
+});
+
 module.exports = {
     sequelize: sequelize,
     Person: Person,
-	LoginInstance: LoginInstance
+	LoginInstance: LoginInstance,
+    ShareInfo: ShareInfo,
+    ActiveShare: ActiveShare
     //name: name //hide/delete?
 };

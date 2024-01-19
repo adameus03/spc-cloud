@@ -93,8 +93,9 @@ function gitGetCommits(pwd) {
  * @param {*} symlinkDomain 
  * @returns Promise that resolves when the command is executed
  */
-function createSymlink(target, linkpath, sharerName, symlinkDomain = 'shared') {
-    return executeShellCommand(`ln -s ${target} ${linkpath}.${sharerName}.${symlinkDomain}`);
+function createSymlink(target, linkpath, symlinkDomain = 'shared') {
+    console.log(`Create slink with domain ${symlinkDomain}`);
+    return executeShellCommand(`ln -s ${target} ${linkpath}.${symlinkDomain}`);
 }
 
 

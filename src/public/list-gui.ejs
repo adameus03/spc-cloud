@@ -1,6 +1,7 @@
 <p>
   <span class="spc-navigable" title="Return to parent dir" onclick="returnToParent('<%= locals.currentDirectory %>')">↩️</span>
   <span class="spc-navigable" title="Refresh this dir" onclick="reloadCurrentDir('<%= locals.currentDirectory %>')">🔄</span>
+  <span class="spc-navigable" title="Pull shared directory" onclick="pullSharedDirectory()">🌐</span>
   <span> Current directory: <i><%= locals.currentDirectory %></i></span>
 </p>
 <table class="table table-hover table-dark">
@@ -52,9 +53,9 @@
           <td>
             <a href="<%= getDownloadHref(locals.filesList[i].name) %>" title="Download">⬇️</a>
             <% if(locals.filesList[i].isDir) { %>
-              <a href="#" title="Propagate">📢</a>
+              <a href="#" title="Propagate" onclick="makeDirectoryShared('<%= locals.filesList[i].name %>', '<%= locals.currentDirectory %>')">📢</a>
             <% } else { %>
-              <a href="#"> </a>
+              <span> </span>
             <% } %>
             <span title="Throw to rubbish" class="spc-navigable" onclick="deleteFile('<%= locals.filesList[i].name %>', '<%= locals.currentDirectory %>', '<%= i %>')">🗑️</span>
           </td>
@@ -85,6 +86,72 @@
   }
 </style>
 <script>
+
+  function pullSharedDirectory() {
+    let sharer = prompt("Please enter the name of the sharer");
+    let dirRelPath = prompt("Please enter the sharer's path to shared directory");
+    let passKey = prompt("Please enter the passKey for the shared directory");
+    
+
+
+    if (dirRelPath && passKey && sharer) {
+      $.post("/api/pullShared", {dirRelPath: dirRelPath, sharer_name: sharer, passKey: passKey}, function(data, status) {
+        if(status === "success") {
+          if (data.success) {
+            alert(data.success);
+          }
+          else if (data.error) {
+            alert(`Pulling shared directory errored: ${data.error}`);
+          }
+          else {
+            alert(`Error pulling shared directory. Got unexpected response: ${data}`);
+          }
+          
+        } else {
+          alert(`Error pulling shared directory. Status: ${status}; data: ${data}`);
+        }
+      });
+    }
+  }
+
+  function getRanHex(len) {
+    var maxlen = 8,
+        min = Math.pow(16,Math.min(len,maxlen)-1) 
+        max = Math.pow(16,Math.min(len,maxlen)) - 1,
+        n   = Math.floor( Math.random() * (max-min+1) ) + min,
+        r   = n.toString(16);
+    while ( r.length < len ) {
+       r = r + getRanHex( len - maxlen );
+    }
+    return r;
+  }
+
+  function makeDirectoryShared(fname, currDir) {
+    //prompt for passKey and specification of share mode (readonly, readwrite)
+
+    let passKey = prompt("Please set the passKey for the shared directory", getRanHex(16));
+    let isReadOnly = confirm("Should the shared directory be readonly?");
+
+    //alert(fname); //for now
+    //Send share request to server
+    $.post("/api/makeShared", {f: fname, passKey: passKey, isReadOnly: isReadOnly}, function(data, status) {
+      if(status === "success") {
+        if (data.success) {
+          alert(data.success);
+        }
+        else if (data.error) {
+          alert(data.error);
+        }
+        else {
+          alert(`Error making directory shared. Got unexpected response: ${data}`);
+        }
+        
+      } else {
+        alert(`Error making directory shared. Status: ${status}; data: ${data}`);
+      }
+    });
+  }
+
   function navigationTriggered(fname, currDir) {
     //alert(fname); //for now
     let newHref = "/list-gui?d=" + currDir;

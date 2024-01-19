@@ -237,6 +237,21 @@ router.post('/delete', async (req, res) => {
   }*/
 });
 
+function isDirectoryOrSymlinkToDirectory(path) {
+  //check if is directory
+  if (fs.lstatSync(path).isDirectory()) {
+      return true;
+  }
+  //check if is symlink to directory
+  if (fs.lstatSync(path).isSymbolicLink()) {
+      let target = fs.readlinkSync(path);
+      if (fs.lstatSync(target).isDirectory()) {
+          return true;
+      }
+  }
+  return false;
+}
+
 router.get('/download', async (req, res) => {
   if(req.query.f){
     //let filepath = `./usrFiles/${req.query.f}`;
@@ -246,7 +261,8 @@ router.get('/download', async (req, res) => {
     let filepath = `${process.env.USRFILES_LOCATION}/${session.user_id}/${req.query.f}`;
     if(fs.existsSync(filepath)){
       console.log(`file exists: ${filepath}`);
-      if (!fs.lstatSync(filepath).isDirectory()) {
+      //if (!fs.lstatSync(filepath).isDirectory()) {
+      if (!isDirectoryOrSymlinkToDirectory(filepath)) {
         console.log(`FILE DOWNLOAD ${filepath}`);
         res.download(filepath, (err)=>{
           if (err) {
@@ -289,6 +305,111 @@ router.get('/download', async (req, res) => {
     }
   }
 
+});
+
+
+router.post('/makeShared', async (req, res) => {
+  //Make directory shared, use passKey sent from client
+  console.log("MAKE SHARED");
+  const form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files) {
+    console.log(`fields: ${JSON.stringify(fields)}}`);
+    if (fields.f) {
+      db.LoginInstance.findByPk(req.cookies["login_id"]).then((user)=>{
+        let sharer_id = user.user_id;
+        //let filepath = `${process.env.USRFILES_LOCATION}/${user.user_id}/${fields.f}`;
+        let passKey = fields.passKey.toString();
+        let isReadOnly = fields.isReadOnly.toString() === "true";
+        let shareInfo = new sharing.ShareInfo(sharer_id, fields.f.toString(), passKey, isReadOnly);
+        sharing.executeShareInfo(shareInfo).then(()=>{
+          res.send({ success: "Successfully shared the directory." });
+        }).catch((err) => {
+          res.send({error: `sharing.executeShareInfo error: ${err}`});  
+        });
+        
+      }).catch((err) => {
+        res.send({error: `Error while seeking LoginInstance: ${err}`});
+      });
+      
+    }
+  }).catch((err) => {
+    res.send({error: `Error while parsing the form: ${err}`});
+  });
+});
+
+router.post('/makeUnshared', async (req, res) => {
+  //Make directory unshared
+  /**
+   * Not implemented
+   */
+  console.error("Not implemented");
+});
+
+/**
+ * Post params: sharer_name, dirRelPath, passKey
+ */
+router.post('/pullShared', async (req, res) => {
+  //Create symlink if authorized
+  console.log("PULL SHARED");
+  const form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files) {
+    console.log(`fields: ${JSON.stringify(fields)}}`);
+    if (fields.dirRelPath) {
+      db.LoginInstance.findByPk(req.cookies["login_id"]).then((user)=>{
+        let sharee_id = user.user_id;
+        let passKey = fields.passKey[0];
+        let dirRelPath = fields.dirRelPath[0];
+        // find sharer_id from sharer_name (sharer's username)
+        db.Person.findOne({
+          where: {
+            username: fields.sharer_name[0]
+          }
+        }).then((sharer) => {
+          if (sharer) {
+            let sharer_id = sharer.user_id;
+            
+            //Check passKey
+            db.ShareInfo.findOne({where: {sharer_id: sharer_id, dirRelPath: dirRelPath}}).then((shareInfo) => {
+              if (shareInfo) {
+                if (shareInfo.passKey === passKey) {
+                  //Create symlink
+                  sharing.shareDirectory(sharer_id, sharee_id, dirRelPath, passKey).then(() => {
+                    res.send({ success: "Successfully pulled the shared directory." });
+                  }).catch((err) => {
+                    res.send({error: `sharing.shareDirectory error: ${err}`}); 
+                  });
+                } else {
+                  res.send({error: "Invalid passKey"});
+                }
+              } else {
+                res.send({error: "Invalid dirRelPath or sharer_name"});
+              }
+            }).catch((err) => {
+              res.send({error: `db.ShareInfo.findOne error: ${err}`}); 
+            });
+
+            /*sharing.shareDirectory(sharer_id, sharee_id, dirRelPath, passKey).then(() => {
+              res.send({ success: "Successfully pulled the shared directory." });
+            }).catch((err) => {
+              res.send({error: `sharing.shareDirectory error: ${err}`}); 
+            });*/
+            
+          } else {
+            res.send({error: "Invalid sharer"});
+          }
+        }).catch((error) => {
+          console.error(`Error when seeking sharer_id: ${error.message}`);
+        });
+
+        
+      }).catch((err) => {
+        res.send({error: `Error while seeking LoginInstance: ${err}`});
+      });
+      
+    }
+  }).catch((err) => {
+    res.send({error: `Error while parsing the form: ${err}`});
+  });
 });
 
 router.get('/share', async (req, res) => {

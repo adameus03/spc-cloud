@@ -11,19 +11,24 @@ const path = require('path');
 /**
  * 
  * @param {*} sharer_id 
- * @param {*} sharee_id 
  * @param {*} dirRelPath Path relative to sharer's main directory
  * @param {*} passKey 
  * @param {*} isReadOnly 
  */
-function ShareInfo(sharer_id, sharee_id, dirRelPath, passKey, isReadOnly = true) {
+function ShareInfo(sharer_id, dirRelPath, passKey, isReadOnly = true) {
     this.sharer_id = sharer_id;
-    this.sharee_id = sharee_id;
+    //this.sharee_id = sharee_id;
     this.dirRelPath = dirRelPath;
     this.passKey = passKey;
     this.isReadOnly = isReadOnly;
 }
 
+/**
+ * @brief Creates a symbolic link from a directory in sharer's directory to a directory in sharee's directory
+ * @param {*} sharer_id 
+ * @param {*} sharee_id 
+ * @param {*} dirRelPath 
+ */
 function shareDirectory(sharer_id, sharee_id, dirRelPath) {
     if (dirRelPath.startsWith('/')) {
         dirRelPath = dirRelPath.substr(1);
@@ -35,31 +40,33 @@ function shareDirectory(sharer_id, sharee_id, dirRelPath) {
     let symlinkDomain = '';
     // Put subdirectories of the dirRelPath in reverse order separated by dots into symlinkDomain
     let dirRelPathParts = dirRelPath.split('/');
-    for (let i = dirRelPathParts.length - 1; i >= 0; i--) {
+    for (let i = dirRelPathParts.length - 2; i >= 0; i--) {
         symlinkDomain += dirRelPathParts[i];
         symlinkDomain += '.';
     }
     // Append sharer_id and 'shared' to symlinkDomain
     symlinkDomain += `${sharer_id}.shared`;
 
-    shell.symlink.create(sharerDir, shareeDir, symlinkDomain);
+    console.log(`SYMLINK DOMAIN: ${symlinkDomain}`);
 
     console.log(`Sharing ${sharerDir} with ${shareeDir}.${symlinkDomain}`);
+    return shell.symlink.create(sharerDir, shareeDir, symlinkDomain);
 }
 
 /**
- * @brief Executes sharing of a directory.
+ * @brief Enables sharing a directory with another user; stores the share info in the database
  * @param {*} shareInfo Sharing configuration object
  */
 function executeShareInfo(shareInfo) {
-    shareDirectory(shareInfo.sharer_id, shareInfo.sharee_id, shareInfo.dirRelPath);
+    //shareDirectory(shareInfo.sharer_id, shareInfo.sharee_id, shareInfo.dirRelPath);
     //store shareInfo in database
-    db.ShareInfo.create({
+    console.log(`Storing share info in database: ${JSON.stringify(shareInfo)}`);
+    return db.ShareInfo.create({
         sharer_id: shareInfo.sharer_id,
-        sharee_id: shareInfo.sharee_id,
-        dirRelPath: shareInfo.dirRelPath,
-        passKey: shareInfo.passKey,
-        isReadOnly: shareInfo.isReadOnly
+        //sharee_id: shareInfo.sharee_id,
+        dirRelPath: shareInfo.dirRelPath.toString(),
+        passKey: shareInfo.passKey.toString(),
+        isReadOnly: shareInfo.isReadOnly.toString() == "true"
     });
 }
 
@@ -76,7 +83,7 @@ const SHARE_WRITE_PERMISSION = 0;
  */
 function checkPermission(sharee_id, dirAbsPath, permission) {
     return new Promise((resolve, reject) => {
-        db.ShareInfo.findOne({
+        /*db.ShareInfo.findOne({
             where: {
                 sharee_id: sharee_id,
                 dirRelPath: dirRelPath
@@ -93,7 +100,27 @@ function checkPermission(sharee_id, dirAbsPath, permission) {
             }
         }).reject((err) => {
             reject(err);
+        });*/
+        // Get dirRelPath format from dirAbsPat format (reverse order joined by dots)
+        let dirRelPath = '';
+        let dirAbsPathParts = dirAbsPath.split('.');
+        for (let i = dirAbsPathParts.length - 2; i >= 0; i--) {
+            dirRelPath += dirAbsPathParts[i];
+            dirRelPath += '/';
+        }
+        console.log(`Checking permission for ${sharee_id} to access ${dirRelPath}`);
+        // Check if sharee has an ActiveShare 
+        // Join ActiveShare and ShareInfo tables on share_id
+        ShareInfo.findAll({
+            include: { model: ActiveShare, required: true },
+        }).then((shareInfo_activeShare_join) => {
+            console.log(shareInfo_activeShare_join); 
+            /**
+             * @todo Check if sharee has an ActiveShare
+             * @todo Implement
+             */   
         });
+          
     });
     
 }
@@ -102,6 +129,7 @@ module.exports = {
     ShareInfo: ShareInfo,
     executeShareInfo: executeShareInfo,
     checkPermission: checkPermission,
+    shareDirectory: shareDirectory,
     SHARE_READ_PERMISSION: SHARE_READ_PERMISSION,
     SHARE_WRITE_PERMISSION: SHARE_WRITE_PERMISSION
 }

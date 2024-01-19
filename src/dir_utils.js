@@ -29,6 +29,21 @@ function createUserDirectory(user_id) {
     shell.gitInit(`${process.env.USRFILES_LOCATION}/${user_id}`);
 }
 
+function isDirectoryOrSymlinkToDirectory(path) {
+    //check if is directory
+    if (fs.lstatSync(path).isDirectory()) {
+        return true;
+    }
+    //check if is symlink to directory
+    if (fs.lstatSync(path).isSymbolicLink()) {
+        let target = fs.readlinkSync(path);
+        if (fs.lstatSync(target).isDirectory()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function getFileList(user_id, d='') {
     //check if dir exists
     if (!fs.existsSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}`)) {
@@ -40,8 +55,13 @@ function getFileList(user_id, d='') {
             name: fname,
             //size: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}/${fname}`).size,
             size: getHumanReadableFileSize(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`),
-            isDir: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`).isDirectory()
+            //isDir: fs.lstatSync(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`).isDirectory()
+            isDir: isDirectoryOrSymlinkToDirectory(`${process.env.USRFILES_LOCATION}/${user_id}${d}/${fname}`)
         }
+    })
+    //filter out hidden files
+    .filter((file) => {
+        return !file.name.startsWith('.');
     });
 }
 
