@@ -76,7 +76,8 @@ function gitGetCommits(pwd) {
             }
             resolve(commits);
         }).catch((err) => {
-            reject(err);
+            console.log(`Error getting commits for ${pwd}: ${err}`);
+            resolve([]);
         });
     });
 }
