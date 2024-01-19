@@ -337,8 +337,8 @@ router.get('/share', async (req, res) => {
   let decryptedData = decipher.update(encryptedFileName, 'base64', 'utf-8');
   decryptedData += decipher.final('utf-8');
 
-  let userId = users.getUserIdFromUserName(personName);
-  sharing.executeShareInfo(new ShareInfo(userId, session.dataValues.user_id, decryptedData, password));
+  let userId = await users.getUserIdFromUsername(personName);
+  sharing.executeShareInfo(new sharing.ShareInfo(userId, session.dataValues.user_id, decryptedData, password));
 
 
   return decryptedData;
