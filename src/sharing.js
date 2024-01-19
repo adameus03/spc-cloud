@@ -4,7 +4,7 @@
  * Only a directory can be shared along with its contents.
  */
 
-const db = require('./db.js');
+const db = require('./database.js');
 const shell = require('./shell.js');
 const path = require('path');
 
