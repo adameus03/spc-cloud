@@ -5,6 +5,8 @@ VOLUME_GUARD_PATH="./persistent_volume_guard.sh"
 CONFIG_PATH="./config.sh"
 echo "$SCRIPT_NICKNAME: Running packages upgrade"
 apk update && apk upgrade
+git config --global user.email you@example.com
+git config --global user.name "Your Name"
 #echo "Start script: starting watch whoami in background"
 #watch whoami
 
