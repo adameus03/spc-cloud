@@ -57,21 +57,25 @@ function gitMoveToCommit(pwd, commitHash) {
 /**
  * 
  * @param {*} pwd User storage directory path
- * @returns Promise that resolves with an array of commit objects in the form { hash, message }
+ * @returns Promise that resolves with an array of commit objects in the form { hash, message, timestamp }
  */
 function gitGetCommits(pwd) {
     return new Promise((resolve, reject) => {
         let commits = [];
-        // store commits as objects { hash, message }
-        executeShellCommand(`cd ${pwd} && git log --pretty=format:"%H,%s"`).then((stdout) => {
+        // store commits as objects { hash, message, timestamp }
+
+        executeShellCommand(`cd ${pwd} && git log --pretty=format:"%H|%s|%ct"`).then((stdout) => {
             let lines = stdout.split('\n');
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
-                let hash = line.substr(0, line.indexOf(','));
-                let message = line.substr(line.indexOf(',') + 1);
+                let [hash, message, timestamp] = line.split('|');
+                /*let hash = line.substr(0, line.indexOf(','));
+                let message = line.substr(line.indexOf(',') + 1);*/
                 commits.push({
-                    hash: hash,
-                    message: message
+                    hash: hash.substr(0, 4),
+                    message: message,
+                    //convert timestamp to human readable format
+                    timestamp: new Date(timestamp * 1000).toLocaleString()
                 });
             }
             resolve(commits);

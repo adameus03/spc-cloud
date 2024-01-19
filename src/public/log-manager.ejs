@@ -3,15 +3,19 @@
 	<tr>
 		<th>Log entry</th>
 		<th>Log hash</th>
+		<th>Timestamp</th>
 		<th>le button</th>
 	</tr>
 	<% for (const com of commits) { %> 
 		<tr>
 			<td>
-				<%= com.msg %>
+				<%= com.message %>
 			</td>
 			<td>
 				<%= com.hash %>
+			</td>
+			<td>
+				<%= com.timestamp %>
 			</td>
 			<td>
 				<form action="/file-management/revert/<%= com.hash %>"><button type="submit">Revert to</button></form>
